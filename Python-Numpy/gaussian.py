@@ -72,6 +72,7 @@ def main ():
 
         cv2.imshow(text_inp, inp_gray_img)
         cv2.imshow(text_fg, fg_img)
+        #exit()
         cv2.waitKey(50)
 
 

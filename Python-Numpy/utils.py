@@ -104,7 +104,9 @@ def gauss_pdf(x, mu, sigma):
     :return: hustota pravdepodobnosti (hodnota normalniho rozdeleni pro dany pixel)
     """
     # exponent argumentu
-    exp_arg = -(pow(x - mu, 2) / (2.0 * pow(sigma, 2)))
+    x_mu = x - mu
+
+    exp_arg = -(x_mu * x_mu / (2.0 * sigma * sigma))
     e = math.pow(math.e, exp_arg)
 
     return (1.0 / (sigma * SQRT_2PI)) * e
