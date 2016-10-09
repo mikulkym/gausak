@@ -23,7 +23,7 @@ def main ():
     # cv2.namedWindow(text_fg, cv2.CV_WINDOW_AUTOSIZE)
     #######
 
-    probe_command = ('ffprobe', '-v', 'quiet', '-print_format', 'json', '-show_streams', FILE_PATH)
+    probe_command = 'ffprobe -v quiet -print_format json -show_streams ' + FILE_PATH
 
     process = subprocess.Popen(probe_command, stdout=subprocess.PIPE, stderr=None)
     video_info = json.load(process.stdout)

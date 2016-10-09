@@ -9,6 +9,9 @@ import subprocess
 # import sys
 import Tkinter as tk
 from PIL import Image,  ImageTk
+import platform
+
+isPyPy = platform.python_implementation() == 'PyPy'
 
 K = 5
 SIGMA_INIT = 30
@@ -79,6 +82,7 @@ def main ():
     def mainLoop():
         # while img:
         frame = process.stdout.read(frame_size)
+
         if frame:
             # print frame[0:width]
             img = Image.frombuffer('L', (width, height), frame)
@@ -106,16 +110,16 @@ def main ():
             print 'Update Model time {0}'.format(model_update_time)
             print 'Extract fg time {0}'.format(extract_fg_time)
 
-            ########### Pro PYPY zakomentovat ###########
-            # original.phorig = ImageTk.PhotoImage(inp_gray_img)
-            # original.ph = ImageTk.PhotoImage(fg_img)
-            # original.canvas.create_image(sh_width/2, sh_height/2, image=original.phorig)
-            # original.canvas.create_image(sh_width + sh_width/2, sh_height/2, image=original.ph)
-            # original.canvas.update_idletasks()
-
-            fg_img.save('pypyobrazek.bmp')
-
-            # fg_img.show(title='titulek')
+            if isPyPy:
+                fg_img.save('pypyobrazek.bmp')
+                # fg_img.show(title='titulek')
+            else:
+                # ########## Pro PYPY zakomentovat ###########
+                original.phorig = ImageTk.PhotoImage(inp_gray_img)
+                original.ph = ImageTk.PhotoImage(fg_img)
+                original.canvas.create_image(sh_width/2, sh_height/2, image=original.phorig)
+                original.canvas.create_image(sh_width + sh_width/2, sh_height/2, image=original.ph)
+                original.canvas.update_idletasks()
 
             original.after(0, mainLoop)
 
