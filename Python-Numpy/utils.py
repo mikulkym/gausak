@@ -13,7 +13,7 @@ def update_model(model, img):
     # for x in range(height):
     #     for y in range(width):
     # iterator
-    it = np.nditer(img, flags = ['multi_index'])
+    it = np.nditer(img, flags=['multi_index'])
     while not it.finished:
         x, y = it.multi_index
         # print (x, y)
@@ -143,3 +143,27 @@ def extract_fg(model, inp_img, fg_img):
                 fg_img[x][y] = 255
             else:
                 fg_img[x][y] = 0
+
+
+def count_index_2d(x, y, num_y):
+    """
+    Count 1D array index from 2D
+    :param x: int row
+    :param y: int column
+    :param num_y: int number of columns
+    :return:
+    """
+    return x * num_y + y
+
+
+def count_index_3d(x, y, z, num_y, num_z):
+    """
+    Count 1D array index from 3D
+    :param x: int row
+    :param y: int col
+    :param z: int depth element
+    :param num_y: int number of columns
+    :param num_z: int number of elements (max depth)
+    :return:
+    """
+    return (x * num_y * num_z) + (y * num_z) + z

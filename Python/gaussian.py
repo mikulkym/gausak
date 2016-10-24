@@ -78,7 +78,7 @@ def main ():
     # computed = tk.Tk()
     # computed.canvas = tk.Canvas(computed, width = sh_width, height = sh_height)
     # computed.canvas.grid(row = 0, column = 0)
-
+    original.iteration = 0
     def mainLoop():
         # while img:
         frame = process.stdout.read(frame_size)
@@ -111,7 +111,9 @@ def main ():
             print 'Extract fg time {0}'.format(extract_fg_time)
 
             if isPyPy:
-                fg_img.save('pypyobrazek.bmp')
+                original.iteration += 1
+                if original.iteration % 5 == 0:
+                    fg_img.save('pypyobrazek.bmp')
                 # fg_img.show(title='titulek')
             else:
                 # ########## Pro PYPY zakomentovat ###########

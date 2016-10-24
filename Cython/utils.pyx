@@ -3,16 +3,18 @@
 import math
 # from libc.stdint cimport uintptr_t
 
-def update_model(model, img):
+cdef void update_model(model, img):
     """
     :param model: model obrazku
     :param img: obrazek
     """
-    width = model.width
-    height = model.height
+    cdef int width = model.width
+    cdef int height = model.height
     pm = model.pm
 
-    print (height, width)
+    cdef int x, y
+
+    # print (height, width)
     for x in range(height):
         for y in range(width):
             # print (x, y)
@@ -130,7 +132,7 @@ cdef void extract_fg(model, inp_img, fg_img):
     cdef unsigned int b = 0
     # fg_img.fill(0)
     cdef float sum_thresh
-
+    cdef int x, y, k
     for x in range(model.height):
         for y in range(model.width):
             color = inp_img.getpixel((y, x))
