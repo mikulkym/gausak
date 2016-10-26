@@ -7,55 +7,52 @@ def update_model(model, img):
     """
     width = model.width
     height = model.height
-    pm = model.pm
 
     print (height, width)
-    # for x in range(height):
-    #     for y in range(width):
-    # iterator
-    it = np.nditer(img, flags=['multi_index'])
-    while not it.finished:
-        x, y = it.multi_index
-        # print (x, y)
-        c = it[0]
-        it.iternext()
-        pm_xy = pm[x][y]
-        #cython, nativni pole, array python. numpy a araay ukladani cisel, pro pixel 3 pole, struktura poli,
-        #  pole R, pole G, pole B, pole separatne pro mu, theta
-        sum_gauss_mix, argmax_k, bay = sum_and_max_gauss_mixture(int(c), pm_xy, model.K)
-        weight_k = pm_xy[0][argmax_k]
-        mu_k = pm_xy[1][argmax_k]
-        sigma_k = pm_xy[2][argmax_k]
+    for x in range(height):
+        for y in range(width):
+            index = count_index_2d(x, y, width)
+            weight = model.weight[index]
+            sigma = model.sigma[index]
+            mu = model.mu[index]
+            # print (x, y)
+            c = img[x][y]
+            # it.iternext()
 
-        weight_k_1 = (1.0 - model.alpha) * weight_k + model.alpha * bay
-        pm_xy[0][argmax_k] = weight_k_1
-        normalize_weight(model, x, y)
+            sum_gauss_mix, argmax_k, bay = sum_and_max_gauss_mixture(int(c), weight, sigma, mu, model.K)
+            weight_k = weight[argmax_k]
+            mu_k = mu[argmax_k]
+            sigma_k = sigma[argmax_k]
 
-        rho_k = (model.alpha * bay) / weight_k_1
-        rho_k_1 = (1.0 - rho_k)
-        mu_k_1 = rho_k_1 * mu_k + rho_k * float(c)
-        sigma_k_1 = rho_k_1 * pow(sigma_k, 2) + rho_k * pow(c - mu_k, 2)
+            weight_k_1 = (1.0 - model.alpha) * weight_k + model.alpha * bay
+            weight[argmax_k] = weight_k_1
+            normalize_weight(weight, model.K)
 
-        pm_xy[1][argmax_k] = mu_k_1
+            rho_k = (model.alpha * bay) / weight_k_1
+            rho_k_1 = (1.0 - rho_k)
+            mu_k_1 = rho_k_1 * mu_k + rho_k * float(c)
+            sigma_k_1 = rho_k_1 * (sigma_k * sigma_k) + rho_k * (c - mu_k)*(c - mu_k)
 
-        new_sigma = math.sqrt(sigma_k_1)
-        if new_sigma > model.sigma_tresh:
-            pm_xy[2][argmax_k] = new_sigma
+            mu[argmax_k] = mu_k_1
+
+            new_sigma = math.sqrt(sigma_k_1)
+            if new_sigma > model.sigma_tresh:
+                sigma[argmax_k] = new_sigma
 
 
-def normalize_weight(model, x, y):
+def normalize_weight(weight, K):
     """
     normalizace vah (soucet vah 1)
-    :param model: model obrazku
-    :param x: pozice x
-    :param y: pozice y
+    :param weight: pole vah pro jeden pixel
+    :param K: pocet vah
     """
-    sum_weight = sum(model.pm[x][y][0])
-    for k in range(model.K):
-        model.pm[x][y][0][k] /= sum_weight
+
+    sum_weight = sum(weight)
+    for k in range(K):
+        weight[k] /= sum_weight
 
 
-def sum_and_max_gauss_mixture(pixel_val, pm_xy, K):
+def sum_and_max_gauss_mixture(pixel_val, weight, sigma, mu, K):
     """
     :param pixel_val: barva pixelu
     :param pm_xy: pixel model na pozici [x][y]
@@ -67,9 +64,9 @@ def sum_and_max_gauss_mixture(pixel_val, pm_xy, K):
     max_distribution = -10.0
 
     for k in range(K):
-        weight_k = pm_xy[0][k]
-        mu_k = pm_xy[1][k]
-        sigma_k = pm_xy[2][k]
+        weight_k = weight[k]
+        mu_k = mu[k]
+        sigma_k = sigma[k]
 
         tmp_distribution = weighted_distribution(pixel_val, weight_k, mu_k, sigma_k)
         gauss_sum += tmp_distribution
@@ -107,7 +104,7 @@ def gauss_pdf(x, mu, sigma):
     x_mu = x - mu
 
     exp_arg = -(x_mu * x_mu / (2.0 * sigma * sigma))
-    e = math.pow(math.e, exp_arg)
+    e = math.exp(exp_arg)
 
     return (1.0 / (sigma * SQRT_2PI)) * e
 
@@ -120,40 +117,44 @@ def extract_fg(model, inp_img, fg_img):
     :param fg_img: vystupni obrazek
     """
     LAMBDA = 2.5
-    pm = model.pm
     b = 0
     # fg_img.fill(0)
 
-    for x in range(model.height):
-        for y in range(model.width):
-            color = inp_img[x][y]
+    for x in range(model.width):
+        for y in range(model.height):
+            index = count_index_2d(y, x, model.width)
+            weight = model.weight[index]
+            sigma = model.sigma[index]
+            mu = model.mu[index]
+
+            color = inp_img[y][x]
             sum_thresh = 0.0
 
             for k in range(model.K):
-                sum_thresh += pm[x][y][0][k]
+                sum_thresh += weight[k]
 
                 if sum_thresh > model.T:
                     b = k
                     break
 
-            mu_k = pm[x][y][1][b]
-            sigma_k = pm[x][y][2][b]
+            mu_k = mu[b]
+            sigma_k = sigma[b]
 
             if math.fabs(int(color) - mu_k) > LAMBDA * sigma_k:
-                fg_img[x][y] = 255
+                fg_img[y][x] = 255
             else:
-                fg_img[x][y] = 0
+                fg_img[y][x] = 0
 
 
-def count_index_2d(x, y, num_y):
+def count_index_2d(y, x, num_x):
     """
     Count 1D array index from 2D
-    :param x: int row
-    :param y: int column
-    :param num_y: int number of columns
+    :param y: int row
+    :param x: int column
+    :param num_x: int number of row
     :return:
     """
-    return x * num_y + y
+    return y * num_x + x
 
 
 def count_index_3d(x, y, z, num_y, num_z):

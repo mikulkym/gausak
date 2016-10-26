@@ -58,20 +58,27 @@ class Model1D:
         num_pixels = width * height
 
         # weight
-        self.weight = numpy.empty(num_pixels * K, numpy.float).fill(1.0 / K)
+        self.weight = numpy.empty((num_pixels, K), numpy.float)
+        for i in xrange(0, num_pixels):
+            self.weight[i].fill(1.0 / K)
+
         # sigma
-        self.sigma = numpy.empty(num_pixels * K, numpy.float).fill(sigma)
+        self.sigma = numpy.empty((num_pixels, K), numpy.float)
+        for i in xrange(0, num_pixels):
+            self.sigma[i].fill(sigma)
 
         # mu
 
         # prepare initial
+        # vypocitam si hodnoty(jeden pixel)
         mu_init = numpy.zeros((K,), numpy.float)
         for k in xrange(0, K):
             mu_init[k] = (k * (255 / K) + (255 / K) / 2)
 
-        tmp_mu = numpy.empty(num_pixels * K, numpy.object)
+        # prekopiruju
+        tmp_mu = numpy.empty((num_pixels, K), numpy.float)
         for pixel in xrange(0, num_pixels):
             for i in xrange(0, K):
-                tmp_mu[(pixel * K) + i] = mu_init[i]
+                tmp_mu[pixel][i] = mu_init[i]
 
         self.mu = tmp_mu

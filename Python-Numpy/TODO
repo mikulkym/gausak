@@ -1,3 +1,7 @@
 separatni pole
 Zrychlit - profilovani
 procistit
+
+
+#cython, nativni pole, array python. numpy a araay ukladani cisel, pro pixel 3 pole, struktura poli,
+        #  pole R, pole G, pole B, pole separatne pro mu, theta

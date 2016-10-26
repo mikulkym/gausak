@@ -109,6 +109,7 @@ def main ():
 
             print 'Update Model time {0}'.format(model_update_time)
             print 'Extract fg time {0}'.format(extract_fg_time)
+            # exit()
 
             if isPyPy:
                 original.iteration += 1

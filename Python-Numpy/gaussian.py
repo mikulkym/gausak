@@ -30,7 +30,7 @@ def main ():
     cv2.moveWindow(text_inp, 0, 0)
     cv2.moveWindow(text_fg, sh_width + 10, 0)
     start = time.time()
-    model = Model(sh_width, sh_height, K, SIGMA_INIT, ALPHA, SIGMA_THRESH, T)
+    model = Model1D(sh_width, sh_height, K, SIGMA_INIT, ALPHA, SIGMA_THRESH, T)
     # print model.pm
     # exit()
     end = time.time()
@@ -38,13 +38,6 @@ def main ():
 
     fg_img = np.zeros((sh_height, sh_width), np.uint8)
 
-
-    # cap.grab()
-    # img = cap.retrieve()[1]
-    # show_img = cv2.resize(img, (sh_width, sh_height))
-    # inp_gray_img = cv2.cvtColor(show_img, cv2.COLOR_RGB2GRAY)
-
-    # while img:
     while cap.grab():
         #Grabs the next frame from video file or capturing device
         img = cap.retrieve()[1]
@@ -72,10 +65,8 @@ def main ():
 
         cv2.imshow(text_inp, inp_gray_img)
         cv2.imshow(text_fg, fg_img)
-        #exit()
+        exit()
         cv2.waitKey(50)
-
-
 
 if __name__ == "__main__":
     main()
