@@ -1,12 +1,12 @@
 import numpy
-
+"""
 def generatePixelModel(K, sigma, weight_init):
-    """
+
     :param K: pocet povrchu pixelu
     :param sigma: odchylka
     :param weight_init: vaha pixelu, (1/pocet povrchu), (celkovy soucet vah je 1)
     :return: pixel model
-    """
+
     # pm = [[weight], [mu], [sigma]]
     pm = [[], [], []]
     for k in range(K):
@@ -25,8 +25,7 @@ class Model:
         self.width = width
         self.height = height
         weight_init = 1.0 / K
-        # generator v generatoru
-        # self.pm = [[generatePixelModel(K, sigma, weight_init) for j in range(width)] for i in range(height)]
+
         self.pm = numpy.empty((height, width), numpy.object)
         # print self.pm
 
@@ -45,6 +44,8 @@ class Model:
         for i in xrange(height):
             for j in xrange(width):
                 self.pm[i][j] = numpy.array([numpy.copy(initial_weight), numpy.copy(initial_mu), numpy.copy(initial_sigma)])
+"""
+
 
 class Model1D:
     def __init__(self, width, height, K, sigma, alpha, sigma_thresh, T):

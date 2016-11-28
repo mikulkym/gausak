@@ -47,6 +47,7 @@ def main ():
         # print 'img {0}'.format(img.shape)
         # print 'show_img {0}'.format(show_img.shape)
         # print 'inp_gray_img {0}'.format(inp_gray_img.shape)
+        # print inp_gray_img
         # print 'fg_img {0}'.format(fg_img.shape)
         # print 'model {0}'.format(model.pm.shape)
 

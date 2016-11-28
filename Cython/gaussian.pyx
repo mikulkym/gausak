@@ -18,10 +18,6 @@ FILE_PATH = '../dt_passat.mpg'
 def main ():
     text_inp = "Input Image"
     text_fg = "Foreground"
-    # tk vice oken
-    # cv2.namedWindow(text_inp, cv2.CV_WINDOW_AUTOSIZE)
-    # cv2.namedWindow(text_fg, cv2.CV_WINDOW_AUTOSIZE)
-    #######
 
     probe_command = 'ffprobe -v quiet -print_format json -show_streams ' + FILE_PATH
 
@@ -53,14 +49,11 @@ def main ():
     sh_width = width / 2
     sh_height = height / 2
 
-    # cv2.moveWindow(text_inp, 0, 0)
-    # cv2.moveWindow(text_fg, sh_width + 10, 0)
     start = time.time()
     model = Model(sh_width, sh_height, K, SIGMA_INIT, ALPHA, SIGMA_THRESH, T)
     end = time.time()
     print 'Model Init time {0}'.format(end - start)
 
-    # fg_img = np.zeros((sh_height, sh_width), np.uint8)
     original = tk.Tk()
     original.c = 0
     original.canvas = tk.Canvas(original, width = width, height = sh_height)

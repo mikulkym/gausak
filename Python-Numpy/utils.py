@@ -1,5 +1,7 @@
 import math
 import numpy as np
+
+
 def update_model(model, img):
     """
     :param model: model obrazku
@@ -8,7 +10,7 @@ def update_model(model, img):
     width = model.width
     height = model.height
 
-    print (height, width)
+    # print (height, width)
     for x in range(height):
         for y in range(width):
             index = count_index_2d(x, y, width)
@@ -54,11 +56,14 @@ def normalize_weight(weight, K):
 
 def sum_and_max_gauss_mixture(pixel_val, weight, sigma, mu, K):
     """
-    :param pixel_val: barva pixelu
-    :param pm_xy: pixel model na pozici [x][y]
+    :param pixel_val: pixel na pozici img[x][y]
+    :param weight: vaha pixelu
+    :param sigma: odchylka
+    :param mu: stredni hodnota
     :param K: povrch pixelu
     :return: soucet mixtury Gaussianu, povrch s nejvetsi pravdepodobnosti vyskytu, Baesuv teorem
     """
+
     gauss_sum = 0.0
     max_k = 0
     max_distribution = -10.0
@@ -75,7 +80,7 @@ def sum_and_max_gauss_mixture(pixel_val, weight, sigma, mu, K):
             max_distribution = tmp_distribution
             max_k = k
 
-    return (gauss_sum, max_k, (max_distribution / gauss_sum))
+    return gauss_sum, max_k, (max_distribution / gauss_sum)
 
 
 def weighted_distribution(pixel, weight, mu, sigma):
@@ -157,8 +162,9 @@ def count_index_2d(y, x, num_x):
     return y * num_x + x
 
 
+"""
 def count_index_3d(x, y, z, num_y, num_z):
-    """
+
     Count 1D array index from 3D
     :param x: int row
     :param y: int col
@@ -166,5 +172,6 @@ def count_index_3d(x, y, z, num_y, num_z):
     :param num_y: int number of columns
     :param num_z: int number of elements (max depth)
     :return:
-    """
+
     return (x * num_y * num_z) + (y * num_z) + z
+"""

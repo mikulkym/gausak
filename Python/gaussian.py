@@ -1,10 +1,7 @@
-# import numpy as np
-# import cv2
 from Classes import *
 import utils
 import time
 import json
-# import numpy
 import subprocess
 # import sys
 import Tkinter as tk
@@ -22,8 +19,8 @@ T = 0.7
 FILE_PATH = '../dt_passat.mpg'
 
 def main ():
-    text_inp = "Input Image"
-    text_fg = "Foreground"
+    # text_inp = "Input Image"
+    # text_fg = "Foreground"
 
     # cv2.namedWindow(text_inp, cv2.CV_WINDOW_AUTOSIZE)
     # cv2.namedWindow(text_fg, cv2.CV_WINDOW_AUTOSIZE)
@@ -49,7 +46,6 @@ def main ():
     frame_size = width * height  # in Bytes
 
     # Protoze video je monochromaticke, pouzijeme pixelovy format rgb8, coz zmensi proud.
-
     load_command = ('ffmpeg', '-v', 'quiet', '-i', FILE_PATH, '-f', 'image2pipe', '-pix_fmt', 'rgb8','-vcodec', 'rawvideo', '-')
 
     process = subprocess.Popen(load_command, stdout=subprocess.PIPE, bufsize=10**8)
@@ -59,25 +55,17 @@ def main ():
     sh_width = width / 2
     sh_height = height / 2
 
-    # cv2.moveWindow(text_inp, 0, 0)
-    # cv2.moveWindow(text_fg, sh_width + 10, 0)
     start = time.time()
     model = Model(sh_width, sh_height, K, SIGMA_INIT, ALPHA, SIGMA_THRESH, T)
     end = time.time()
     print 'Model Init time {0}'.format(end - start)
 
-    # fg_img = np.zeros((sh_height, sh_width), np.uint8)
-
     original = tk.Tk()
-    original.canvas = tk.Canvas(original, width = width, height = sh_height)
-    original.canvas.grid(row = 0, column = 0)
+    original.canvas = tk.Canvas(original, width=width, height=sh_height)
+    original.canvas.grid(row=0, column=0)
     fg_img = Image.new('L', (sh_width, sh_height))
     fg_img = fg_img.transpose(Image.FLIP_TOP_BOTTOM)
 
-
-    # computed = tk.Tk()
-    # computed.canvas = tk.Canvas(computed, width = sh_width, height = sh_height)
-    # computed.canvas.grid(row = 0, column = 0)
     original.iteration = 0
     def mainLoop():
         # while img:
@@ -85,12 +73,13 @@ def main ():
 
         if frame:
             # print frame[0:width]
-            img = Image.frombuffer('L', (width, height), frame)
-            img = img.transpose(Image.FLIP_TOP_BOTTOM)
+            # img = Image.frombuffer('L', (width, height), frame)
+            img = Image.frombytes('L', (width, height), frame, 'raw', 'L', 0, 1)
+            # img = img.transpose(Image.FLIP_TOP_BOTTOM)
             inp_gray_img = img.resize((sh_width, sh_height), Image.ANTIALIAS)
 
-            print 'PIXEL'
-            print inp_gray_img.getpixel((sh_width/2, sh_height/2))
+            # print 'PIXEL'
+            # print inp_gray_img.getpixel((sh_width/2, sh_height/2))
             # print 'img {0}'.format(img.shape)
             # print 'show_img {0}'.format(show_img.shape)
             # print 'inp_gray_img {0}'.format(inp_gray_img.shape)
@@ -113,11 +102,10 @@ def main ():
 
             if isPyPy:
                 original.iteration += 1
-                if original.iteration % 5 == 0:
+                if original.iteration % 10 == 0:
                     fg_img.save('pypyobrazek.bmp')
-                # fg_img.show(title='titulek')
+                    # fg_img.show(title='titulek')
             else:
-                # ########## Pro PYPY zakomentovat ###########
                 original.phorig = ImageTk.PhotoImage(inp_gray_img)
                 original.ph = ImageTk.PhotoImage(fg_img)
                 original.canvas.create_image(sh_width/2, sh_height/2, image=original.phorig)

@@ -20,8 +20,7 @@ cdef void update_model(model, img):
             # print (x, y)
             c = img.getpixel((y, x))
             pm_xy = pm[x][y]
-            #cython, nativni pole, array python. numpy a araay ukladani cisel, pro pixel 3 pole, struktura poli,
-            #  pole R, pole G, pole B, pole separatne pro mu, theta
+
             sum_gauss_mix, argmax_k, bay = sum_and_max_gauss_mixture(int(c), pm_xy, model.K)
             weight_k = pm_xy[0][argmax_k]
             mu_k = pm_xy[1][argmax_k]

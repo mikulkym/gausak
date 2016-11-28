@@ -1,5 +1,6 @@
 import math
 
+
 def update_model(model, img):
     """
     :param model: model obrazku
@@ -12,12 +13,9 @@ def update_model(model, img):
     print (height, width)
     for x in range(height):
         for y in range(width):
-            # print (x, y)
-            # profiler, co zere nejvic casu; zkusit dosadit konstantu
             c = img.getpixel((y, x))
             pm_xy = pm[x][y]
-            #cython, nativni pole, array python. numpy a araay ukladani cisel, pro pixel 3 pole, struktura poli,
-            #  pole R, pole G, pole B, pole separatne pro mu, theta
+
             sum_gauss_mix, argmax_k, bay = sum_and_max_gauss_mixture(int(c), pm_xy, model.K)
             weight_k = pm_xy[0][argmax_k]
             mu_k = pm_xy[1][argmax_k]
@@ -74,7 +72,7 @@ def sum_and_max_gauss_mixture(pixel_val, pm_xy, K):
             max_distribution = tmp_distribution
             max_k = k
 
-    return (gauss_sum, max_k, (max_distribution / gauss_sum))
+    return gauss_sum, max_k, (max_distribution / gauss_sum)
 
 
 def weighted_distribution(pixel, weight, mu, sigma):
