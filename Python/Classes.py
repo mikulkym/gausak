@@ -5,6 +5,7 @@ def generatePixelModel(K, sigma, weight_init):
     :param weight_init: vaha pixelu, (1/pocet povrchu), (celkovy soucet vah je 1)
     :return: pixel model
     """
+
     # pm = [[weight], [mu], [sigma]]
     pm = [[], [], []]
     for k in range(K):

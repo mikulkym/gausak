@@ -10,14 +10,14 @@ ALPHA = 0.01
 SIGMA_THRESH = 5.0
 T = 0.7
 
-def main ():
+
+def main():
     text_inp = "Input Image"
     text_fg = "Foreground"
 
-    cv2.namedWindow(text_inp, cv2.CV_WINDOW_AUTOSIZE)
-    cv2.namedWindow(text_fg, cv2.CV_WINDOW_AUTOSIZE)
+    cv2.namedWindow(text_inp, cv2.WINDOW_AUTOSIZE)
+    cv2.namedWindow(text_fg, cv2.WINDOW_AUTOSIZE)
 
-    # constructor
     cap = cv2.VideoCapture("../dt_passat.mpg")
     cap.grab()
     img = cap.retrieve()[1]
@@ -31,8 +31,7 @@ def main ():
     cv2.moveWindow(text_fg, sh_width + 10, 0)
     start = time.time()
     model = Model1D(sh_width, sh_height, K, SIGMA_INIT, ALPHA, SIGMA_THRESH, T)
-    # print model.pm
-    # exit()
+
     end = time.time()
     print 'Model Init time {0}'.format(end - start)
 
@@ -43,13 +42,6 @@ def main ():
         img = cap.retrieve()[1]
         show_img = cv2.resize(img, (sh_width, sh_height))
         inp_gray_img = cv2.cvtColor(show_img, cv2.COLOR_RGB2GRAY)
-
-        # print 'img {0}'.format(img.shape)
-        # print 'show_img {0}'.format(show_img.shape)
-        # print 'inp_gray_img {0}'.format(inp_gray_img.shape)
-        # print inp_gray_img
-        # print 'fg_img {0}'.format(fg_img.shape)
-        # print 'model {0}'.format(model.pm.shape)
 
         start = time.time()
         utils.update_model(model, inp_gray_img)
@@ -66,7 +58,6 @@ def main ():
 
         cv2.imshow(text_inp, inp_gray_img)
         cv2.imshow(text_fg, fg_img)
-        exit()
         cv2.waitKey(50)
 
 if __name__ == "__main__":

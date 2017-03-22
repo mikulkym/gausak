@@ -3,21 +3,25 @@
 import math
 # from libc.stdint cimport uintptr_t
 
-cdef void update_model(model, img):
+
+def update_model(model, img):
     """
     :param model: model obrazku
     :param img: obrazek
     """
-    cdef int width = model.width
-    cdef int height = model.height
+    cdef int width
+    cdef int height
+    width = model.width
+    height = model.height
     pm = model.pm
 
     cdef int x, y
+    cdef int argmax_k
+    cdef float rho_k
 
-    # print (height, width)
     for x in range(height):
         for y in range(width):
-            # print (x, y)
+
             c = img.getpixel((y, x))
             pm_xy = pm[x][y]
 
@@ -42,13 +46,15 @@ cdef void update_model(model, img):
                 pm_xy[2][argmax_k] = new_sigma
 
 
-def normalize_weight(model, x, y):
+cdef void normalize_weight(model, int x, int y):
     """
     normalizace vah (soucet vah 1)
     :param model: model obrazku
     :param x: pozice x
     :param y: pozice y
     """
+    cdef sum_weight
+    cdef int k
     sum_weight = sum(model.pm[x][y][0])
     for k in range(model.K):
         model.pm[x][y][0][k] /= sum_weight
@@ -61,14 +67,17 @@ def sum_and_max_gauss_mixture(int pixel_val, pm_xy, int K):
     :param K: povrch pixelu
     :return: soucet mixtury Gaussianu, povrch s nejvetsi pravdepodobnosti vyskytu, Baesuv teorem
     """
-    cdef float gauss_sum = 0.0
-    cdef int max_k = 0
-    cdef float max_distribution = -10.0
+    cdef float gauss_sum
+    cdef int max_k
+    cdef float max_distribution
     cdef float weight_k
     cdef float mu_k
     cdef float sigma_k
     cdef float tmp_distribution
 
+    gauss_sum = 0.0
+    max_k = 0
+    max_distribution = -10.0
     weights = pm_xy[0]
     mus = pm_xy[1]
     sigmas = pm_xy[2]
@@ -98,8 +107,7 @@ cdef float weighted_distribution(int pixel, float weight, float mu, float sigma)
     """
     return weight * gauss_pdf(pixel, mu, sigma)
 
-
-cdef float SQRT_2PI = math.sqrt(2.0 * math.pi)
+SQRT_2PI = math.sqrt(2.0 * math.pi)
 
 
 cdef float gauss_pdf(int x, float mu, float sigma):
@@ -110,16 +118,17 @@ cdef float gauss_pdf(int x, float mu, float sigma):
     :param sigma: odchylka
     :return: hustota pravdepodobnosti (hodnota normalniho rozdeleni pro dany pixel)
     """
+    cdef float x_mu, exp_arg
+
     # exponent argumentu
-    cdef float x_mu = x - mu
-    cdef float exp_arg = -((x_mu*x_mu) / 2.0 * sigma * sigma)
-    # cdef float e = math.pow(math.e, exp_arg)
-    cdef float e = pow(math.e, exp_arg)
+    x_mu = x - mu
+    exp_arg = -((x_mu*x_mu) / (2.0 * sigma * sigma))
+    e = pow(math.e, exp_arg)
 
     return (1.0 / (sigma * SQRT_2PI)) * e
 
 
-cdef void extract_fg(model, inp_img, fg_img):
+def extract_fg(model, inp_img, fg_img):
     """
     vytahnuti popredi
     :param model: model obrazku
@@ -129,7 +138,6 @@ cdef void extract_fg(model, inp_img, fg_img):
     cdef float LAMBDA = 2.5
     pm = model.pm
     cdef unsigned int b = 0
-    # fg_img.fill(0)
     cdef float sum_thresh
     cdef int x, y, k
     for x in range(model.height):

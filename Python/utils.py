@@ -83,8 +83,8 @@ def weighted_distribution(pixel, weight, mu, sigma):
     :param sigma: odchylka
     :return: vazena distribuce
     """
-    return weight * gauss_pdf(pixel, mu, sigma)
 
+    return weight * gauss_pdf(pixel, mu, sigma)
 
 SQRT_2PI = math.sqrt(2.0 * math.pi)
 
@@ -114,7 +114,6 @@ def extract_fg(model, inp_img, fg_img):
     LAMBDA = 2.5
     pm = model.pm
     b = 0
-    # fg_img.fill(0)
 
     for x in range(model.height):
         for y in range(model.width):

@@ -3,7 +3,6 @@ import utils
 import time
 import json
 import subprocess
-# import sys
 import Tkinter as tk
 from PIL import Image,  ImageTk
 import platform
@@ -18,14 +17,8 @@ T = 0.7
 
 FILE_PATH = '../dt_passat.mpg'
 
-def main ():
-    # text_inp = "Input Image"
-    # text_fg = "Foreground"
 
-    # cv2.namedWindow(text_inp, cv2.CV_WINDOW_AUTOSIZE)
-    # cv2.namedWindow(text_fg, cv2.CV_WINDOW_AUTOSIZE)
-    #######
-
+def main():
     probe_command = ('ffprobe', '-v', 'quiet', '-print_format', 'json', '-show_streams', FILE_PATH)
 
     process = subprocess.Popen(probe_command, stdout=subprocess.PIPE, stderr=None)
@@ -72,19 +65,8 @@ def main ():
         frame = process.stdout.read(frame_size)
 
         if frame:
-            # print frame[0:width]
-            # img = Image.frombuffer('L', (width, height), frame)
             img = Image.frombytes('L', (width, height), frame, 'raw', 'L', 0, 1)
-            # img = img.transpose(Image.FLIP_TOP_BOTTOM)
             inp_gray_img = img.resize((sh_width, sh_height), Image.ANTIALIAS)
-
-            # print 'PIXEL'
-            # print inp_gray_img.getpixel((sh_width/2, sh_height/2))
-            # print 'img {0}'.format(img.shape)
-            # print 'show_img {0}'.format(show_img.shape)
-            # print 'inp_gray_img {0}'.format(inp_gray_img.shape)
-            # print 'fg_img {0}'.format(fg_img.shape)
-            # print 'model {0}'.format(model.pm.shape)
 
             start = time.time()
             utils.update_model(model, inp_gray_img)
@@ -98,13 +80,11 @@ def main ():
 
             print 'Update Model time {0}'.format(model_update_time)
             print 'Extract fg time {0}'.format(extract_fg_time)
-            # exit()
 
             if isPyPy:
                 original.iteration += 1
                 if original.iteration % 10 == 0:
                     fg_img.save('pypyobrazek.bmp')
-                    # fg_img.show(title='titulek')
             else:
                 original.phorig = ImageTk.PhotoImage(inp_gray_img)
                 original.ph = ImageTk.PhotoImage(fg_img)
@@ -114,15 +94,8 @@ def main ():
 
             original.after(0, mainLoop)
 
-    # mainLoop()
-    # original.mainloop()
-    # computed.mainloop()
     original.after(0, mainLoop)
     original.mainloop()
-
-
-
-
 
 if __name__ == "__main__":
     main()
